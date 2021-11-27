@@ -1,6 +1,6 @@
 use crate::card::Shape;
 use crate::game::GameResult;
-use crate::table::Table;
+use crate::table::{Table, TableOutcome};
 
 mod card;
 mod deck;
@@ -9,6 +9,15 @@ mod game;
 mod table;
 
 fn main() {
-    let mut table = Table::new(100, 8, 10);
-    table.start_game();
+    let mut table = Table::new(100, 200,8, 10);
+    let outcome = table.start_game();
+
+    match outcome {
+        TableOutcome::Win => {
+            println!("Won {:}", table.total)
+        },
+        TableOutcome::Lose => {
+            println!("Lost")
+        },
+    }
 }
