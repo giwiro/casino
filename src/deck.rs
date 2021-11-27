@@ -5,19 +5,35 @@ use crate::Shape;
 
 #[derive(Debug)]
 pub struct Deck {
+    size: u16,
     cards: VecDeque<Card>,
+    cut_from_end: u16,
 }
 
 impl Deck {
-    pub fn new(size: u8) -> Deck {
+    pub fn new(size: u16) -> Deck {
+        Deck {
+            size,
+            cards: VecDeque::from_iter(Deck::provided_shuffled_cards(size)),
+            cut_from_end: if size < 4 { 8 } else { 78 }
+        }
+    }
+
+    pub fn reset_cards(&mut self) {
+        self.cards = VecDeque::from_iter(Deck::provided_shuffled_cards(self.size));
+    }
+
+    pub fn should_reshuffle(&self) -> bool {
+        self.cards.len() <= self.cut_from_end as usize
+    }
+
+    fn provided_shuffled_cards(size: u16) -> Vec<Card> {
         let mut cards = vec![];
         for _ in 0..size {
             cards.extend(Deck::create_single_deck())
         }
         cards.shuffle(&mut rand::thread_rng());
-        Deck {
-            cards: VecDeque::from_iter(cards),
-        }
+        cards
     }
 
     fn create_single_deck() -> Vec<Card> {
@@ -32,6 +48,6 @@ impl Deck {
     }
 
     pub fn draw(&mut self) -> Option<Card> {
-        return self.cards.pop_front();
+        self.cards.pop_front()
     }
 }
